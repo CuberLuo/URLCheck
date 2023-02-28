@@ -26,7 +26,7 @@ class SplashActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mHandler.postDelayed(Runnable { mHandler.sendEmptyMessage(0) }, 2000)
+        mHandler.postDelayed(Runnable { mHandler.sendEmptyMessage(0) }, 1000)
 
     }
 

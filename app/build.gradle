@@ -74,5 +74,8 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
     // System UI Controller - Accompanist
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
+    implementation "com.github.jenly1314:zxing-lite:$zxinglite_version"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit2_version"
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
 }
 

@@ -1,7 +1,9 @@
 buildscript {
     ext {
         compose_ui_version = '1.2.0'
-        accompanist_version = "0.21.5-rc"
+        accompanist_version = '0.21.5-rc'
+        zxinglite_version = '2.3.0'
+        retrofit2_version = '2.4.0'
     }
     repositories {
         // 阿里云仓库地址，加快插件下载速度
