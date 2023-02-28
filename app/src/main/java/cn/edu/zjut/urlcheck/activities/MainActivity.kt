@@ -44,11 +44,6 @@ class MainActivity : ComponentActivity() {
 
     }
 
-    /*override fun onBackPressed() {
-        return
-    }*/
-
-
     private fun addNetworkListener(){
         val networkCallback = NetworkCallbackImpl(this)
         val builder = NetworkRequest.Builder()

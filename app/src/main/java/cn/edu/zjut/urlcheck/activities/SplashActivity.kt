@@ -35,16 +35,4 @@ class SplashActivity : ComponentActivity() {
         startActivity(intent)
         this.finish()//销毁启动页
     }
-
-    /*private fun showFullScreen(){
-        //启动页全屏显示
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.R){
-            window.insetsController!!.hide(WindowInsets.Type.statusBars())
-        }else{
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN
-            )
-        }
-    }*/
 }
