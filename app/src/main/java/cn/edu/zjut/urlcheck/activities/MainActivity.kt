@@ -1,5 +1,6 @@
 package cn.edu.zjut.urlcheck.activities
 
+import android.content.ClipData
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -29,6 +30,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import cn.edu.zjut.urlcheck.R
+import cn.edu.zjut.urlcheck.ui.theme.HomeScreen
 import cn.edu.zjut.urlcheck.ui.theme.URLCheckTheme
 import cn.edu.zjut.urlcheck.utils.DialogUtil
 import cn.edu.zjut.urlcheck.utils.LogUtil
@@ -65,13 +68,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             URLCheckTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    MainLayout()
-                }
+                HomeScreen()
             }
         }
 
@@ -137,52 +134,77 @@ class MainActivity : ComponentActivity() {
 
     }
 
+    data class Item(
+        val name:String,
+        val icon:Int
+    )
     @Composable
     fun MainLayout() {
-        Column(//外边距8dp，内边距15dp
-            modifier = Modifier
-                .padding(18.dp)
-                .border(2.dp, Color.Red, shape = RoundedCornerShape(20.dp))//红色圆角边框
-                .padding(15.dp)
-        ) {
-            var text by remember { mutableStateOf("") }
-            val focusManager = LocalFocusManager.current
-            TextField(
-                value = text,
-                onValueChange = {
-                    LogUtil.logInfo(it)
-                    text = it
-                },
-                label = {
-                    Text("学号")
-                },
-                placeholder = {
-                    Text("请输入学号")
-                },
-                keyboardActions = KeyboardActions(onDone = {
-                    sendRequest(text = text)
-                    focusManager.clearFocus()
-                }),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true,
-                modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
-            )
-            Button(
-                onClick = {
-                    sendRequest(text = text)
-                    focusManager.clearFocus()
-                },
-                modifier = Modifier
-                    .padding(8.dp)
-                    .align(alignment = Alignment.CenterHorizontally)
-            ) {
-                Text(
-                    text = "提交",
-                )
-            }
-
-
-        }
+        //var selectedItem by remember{ mutableStateOf(0) }
+        //val items = listOf(
+        //    Item("主页", R.drawable.dark_mode),
+        //    Item("设置",R.drawable.back)
+        //)
+        //Scaffold(
+        //    bottomBar = {
+        //        BottomNavigation {
+        //            items.forEachIndexed{index, item ->
+        //                BottomNavigationItem(
+        //                    selected = selectedItem == index,
+        //                    onClick = { selectedItem = index },
+        //                    label = {Text(item.name)}
+        //                )
+        //            }
+        //        }
+        //    }
+        //){
+        //
+        //}
+        //Column(//外边距8dp，内边距15dp
+        //    modifier = Modifier
+        //        .padding(18.dp)
+        //        .border(2.dp, Color.Red, shape = RoundedCornerShape(20.dp))//红色圆角边框
+        //        .padding(15.dp)
+        //) {
+        //    var text by remember { mutableStateOf("") }
+        //    val focusManager = LocalFocusManager.current
+        //    TextField(
+        //        value = text,
+        //        onValueChange = {
+        //            LogUtil.logInfo(it)
+        //            text = it
+        //        },
+        //        label = {
+        //            Text("学号")
+        //        },
+        //        placeholder = {
+        //            Text("请输入学号")
+        //        },
+        //        keyboardActions = KeyboardActions(onDone = {
+        //            sendRequest(text = text)
+        //            focusManager.clearFocus()
+        //        }),
+        //        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        //        singleLine = true,
+        //        modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+        //    )
+        //    Button(
+        //        onClick = {
+        //            sendRequest(text = text)
+        //            focusManager.clearFocus()
+        //        },
+        //        modifier = Modifier
+        //            .padding(8.dp)
+        //            .align(alignment = Alignment.CenterHorizontally)
+        //    ) {
+        //        Text(
+        //            text = "提交",
+        //        )
+        //    }
+        //    QRCodeScanner()
+        //
+        //
+        //}
 
     }
 
