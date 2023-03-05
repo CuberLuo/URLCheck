@@ -103,7 +103,6 @@ fun BottomMenuItem(
                 tint = if (isSelected) activeTextColor else inactiveTextColor,
                 modifier = Modifier.size(25.dp))
         }
-
     }
 }
 
@@ -143,7 +142,8 @@ fun ScreenTitle() {
 @Composable
 fun SearchText(){
     var text by remember {
-        mutableStateOf("请输入搜索的URL") }
+        mutableStateOf("") }
+
     Box(Modifier
         .fillMaxWidth(),
         contentAlignment = Alignment.Center
@@ -153,13 +153,13 @@ fun SearchText(){
             //modifier = Modifier.wrapContentWidth()
         ) {
             BasicTextField(
+                maxLines=2,
                 value = text, onValueChange = {
                     text = it
                 },
                 textStyle = TextStyle(color = White),
                 cursorBrush = SolidColor(White),
                 modifier = Modifier
-
                     .padding(0.dp)
                     .fillMaxWidth(0.6f)
                     .background(BabyBlue, RoundedCornerShape(percent = 30))
@@ -175,6 +175,14 @@ fun SearchText(){
                         Icon(Icons.Default.Search, tint = White, contentDescription = null)
                         Spacer(Modifier.width(5.dp))
                         Box(modifier = Modifier.padding(top = 7.dp, bottom = 7.dp, end = 7.dp)) {
+                            if(text.isEmpty()){
+                                Text(
+                                    text="请输入搜索的URL",
+                                    style = TextStyle(
+                                        color=Color(107, 118, 179)
+                                    )
+                                )
+                            }
                             innerTextField()
                         }
                     }
