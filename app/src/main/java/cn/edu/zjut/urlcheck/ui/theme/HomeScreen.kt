@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -148,9 +149,9 @@ fun SearchText(){
         .fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            modifier = Modifier.padding(20.dp,0.dp,20.dp,0.dp)
-            //modifier = Modifier.wrapContentWidth()
+        Column(
+            modifier = Modifier.padding(15.dp),
+            verticalArrangement = Arrangement.Center
         ) {
             BasicTextField(
                 maxLines=2,
@@ -160,8 +161,8 @@ fun SearchText(){
                 textStyle = TextStyle(color = White),
                 cursorBrush = SolidColor(White),
                 modifier = Modifier
-                    .padding(0.dp)
-                    .fillMaxWidth(0.6f)
+                    .padding(8.dp)
+                    .fillMaxWidth()
                     .background(BabyBlue, RoundedCornerShape(percent = 30))
                     .padding(5.dp)
                     .background(BabyBlue, RoundedCornerShape(percent = 29)),
@@ -170,11 +171,11 @@ fun SearchText(){
                         .background(BabyBlue, RoundedCornerShape(percent = 30))
                         .padding(0.dp)
                         .background(BabyBlue, RoundedCornerShape(percent = 29)),
-                        verticalAlignment = Alignment.CenterVertically)
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween )
                     {
                         Icon(Icons.Default.Search, tint = White, contentDescription = null)
-                        Spacer(Modifier.width(5.dp))
-                        Box(modifier = Modifier.padding(top = 7.dp, bottom = 7.dp, end = 7.dp)) {
+                        Box(modifier = Modifier.padding(top = 7.dp, bottom = 7.dp, end = 7.dp).fillMaxWidth(0.9f)) {
                             if(text.isEmpty()){
                                 Text(
                                     text="请输入搜索的URL",
@@ -184,6 +185,14 @@ fun SearchText(){
                                 )
                             }
                             innerTextField()
+                        }
+                        if(!text.isEmpty()){
+                            Icon(Icons.Default.Close, tint = Color(107, 118, 179),
+                                contentDescription = null,
+                                modifier = Modifier.clickable { text="" }
+                            )
+                        }else{
+                            Spacer(modifier = Modifier.width(10.dp))
                         }
                     }
                 }
