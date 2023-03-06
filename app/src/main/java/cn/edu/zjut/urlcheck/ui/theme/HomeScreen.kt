@@ -186,10 +186,14 @@ fun SearchText(){
                             }
                             innerTextField()
                         }
-                        Icon(Icons.Default.Close, tint = Color(107, 118, 179),
-                            contentDescription = null,
-                            modifier = Modifier.clickable { text="" }
+                        if(!text.isEmpty()){
+                            Icon(Icons.Default.Close, tint = Color(107, 118, 179),
+                                contentDescription = null,
+                                modifier = Modifier.clickable { text="" }
                             )
+                        }else{
+                            Spacer(modifier = Modifier.width(10.dp))
+                        }
                     }
                 }
             )
