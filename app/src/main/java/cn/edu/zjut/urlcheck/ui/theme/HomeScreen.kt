@@ -1,5 +1,6 @@
 package cn.edu.zjut.urlcheck.ui.theme
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,12 +18,26 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import cn.edu.zjut.urlcheck.BottomMenuContent
 import cn.edu.zjut.urlcheck.R
+import cn.edu.zjut.urlcheck.activities.MainActivity
+import cn.edu.zjut.urlcheck.utils.LogUtil
+import cn.edu.zjut.urlcheck.utils.RequestUtil
+import com.king.zxing.CaptureActivity
+import com.king.zxing.DecodeConfig
+import com.king.zxing.analyze.MultiFormatAnalyzer
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
 
 @Composable
 fun HomeScreen(){
@@ -30,10 +45,10 @@ fun HomeScreen(){
         .background(Background)
         .fillMaxSize())
     {
-        Column() {
+        Column {
             ScreenTitle()
             SearchText()
-            LabelCard()
+
         }
         BottomMenu(items = listOf(
             BottomMenuContent("主页", R.drawable.icon_home) ,
@@ -115,7 +130,7 @@ fun ScreenTitle() {
             .fillMaxWidth()
             .padding(20.dp)
     ){
-        Row() {
+        Row {
             val imageModifier = Modifier
                 .size(30.dp)
                 .clip(CircleShape)
@@ -143,6 +158,10 @@ fun ScreenTitle() {
 fun SearchText(){
     var text by remember {
         mutableStateOf("") }
+    var resultsText by remember {
+        mutableStateOf("There is no result")
+    }
+    val focusManager = LocalFocusManager.current
 
     Box(Modifier
         .fillMaxWidth(),
@@ -154,7 +173,8 @@ fun SearchText(){
         ) {
             BasicTextField(
                 maxLines=2,
-                value = text, onValueChange = {
+                value = text,
+                onValueChange = {
                     text = it
                 },
                 textStyle = TextStyle(color = White),
@@ -166,10 +186,11 @@ fun SearchText(){
                     .padding(5.dp)
                     .background(BabyBlue, RoundedCornerShape(percent = 29)),
                 decorationBox = {innerTextField ->
-                    Row(Modifier
-                        .background(BabyBlue, RoundedCornerShape(percent = 30))
-                        .padding(0.dp)
-                        .background(BabyBlue, RoundedCornerShape(percent = 29)),
+                    Row(
+                        Modifier
+                            .background(BabyBlue, RoundedCornerShape(percent = 30))
+                            .padding(0.dp)
+                            .background(BabyBlue, RoundedCornerShape(percent = 29)),
                         verticalAlignment = Alignment.CenterVertically)
                     {
                         Icon(Icons.Default.Search, tint = White, contentDescription = null)
@@ -188,7 +209,38 @@ fun SearchText(){
                     }
                 }
             )
-            Button(onClick = { /*TODO*/ } ,
+            /*val openNormAlertDialog = remember {
+                mutableStateOf(false)
+            }
+            val msg = remember {
+                mutableStateOf("")
+            }
+            AlertDialogComponent(
+                dialogState = openNormAlertDialog,
+                msg=msg.value
+            )*/
+            Button(onClick = {
+                val call: Call<ResponseBody> = RequestUtil.service.getQRCode(text)
+                call.enqueue(
+                    object : Callback<ResponseBody> {
+                        override fun onResponse(
+                            call: Call<ResponseBody>,
+                            response: Response<ResponseBody>
+                        ) {
+                            val s: String = response.body()!!.string()
+                            /*msg.value=s
+                            openNormAlertDialog.value = !openNormAlertDialog.value*/
+                            resultsText = s
+                            focusManager.clearFocus()
+                        }
+
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            LogUtil.logInfo(t.toString())
+
+                        }
+                    }
+                )
+            } ,
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier
                     .padding(8.dp, 0.dp)
@@ -201,14 +253,50 @@ fun SearchText(){
             ) {
                 Text(text = "Check!")
             }
+
         }
     }
+    LabelCard(resultsText)
 
 
 }
 
 @Composable
-fun LabelCard(){
+fun AlertDialogComponent(
+    dialogState: MutableState<Boolean>,
+    msg:String
+) {
+    if (dialogState.value) {
+        AlertDialog(
+            onDismissRequest = { dialogState.value = false },
+            title = { Text(text = "请求结果") },
+            text = { Text(text = msg) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        dialogState.value = false
+                    }
+                ) {
+                    Text(text = "确定")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        dialogState.value = false
+                    }
+                ) {
+                    Text(text = "取消")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun LabelCard(
+    resultsText:String
+){
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -223,7 +311,7 @@ fun LabelCard(){
             Box(modifier = Modifier
                 .fillMaxWidth()
                 .background(CardBlue)){
-                Text(text = "Search result label", color = White, modifier = Modifier.padding(15.dp))
+                Text(text = resultsText, color = White, modifier = Modifier.padding(15.dp))
             }
         }
     }
