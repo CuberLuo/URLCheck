@@ -20,10 +20,12 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cn.edu.zjut.urlcheck.BottomMenuContent
 import cn.edu.zjut.urlcheck.R
+import cn.edu.zjut.urlcheck.utils.UrlJudgeUtil
 
 @Composable
 fun HomeScreen(){
@@ -144,6 +146,8 @@ fun ScreenTitle() {
 fun SearchText(){
     var text by remember {
         mutableStateOf("") }
+    var isURL by remember {
+        mutableStateOf(true) }
 
     Box(Modifier
         .fillMaxWidth(),
@@ -175,7 +179,9 @@ fun SearchText(){
                         horizontalArrangement = Arrangement.SpaceBetween )
                     {
                         Icon(Icons.Default.Search, tint = White, contentDescription = null)
-                        Box(modifier = Modifier.padding(top = 7.dp, bottom = 7.dp, end = 7.dp).fillMaxWidth(0.9f)) {
+                        Box(modifier = Modifier
+                            .padding(top = 7.dp, bottom = 7.dp, end = 7.dp)
+                            .fillMaxWidth(0.9f)) {
                             if(text.isEmpty()){
                                 Text(
                                     text="请输入搜索的URL",
@@ -197,7 +203,9 @@ fun SearchText(){
                     }
                 }
             )
-            Button(onClick = { /*TODO*/ } ,
+            Button(onClick = {
+                isURL=UrlJudgeUtil().getCompleteUrl(text)
+            } ,
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier
                     .padding(8.dp, 8.dp)
@@ -210,6 +218,16 @@ fun SearchText(){
             ) {
                 Text(text = "Check!")
             }
+            if(!isURL){
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ){
+                    Text(text="请输入有效的URL!", color = YuRed, fontWeight = FontWeight.W700)
+                }
+            }
+
+
         }
 
 

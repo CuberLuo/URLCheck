@@ -21,3 +21,4 @@ val ButtonBlueBrush= Brush.horizontalGradient(
         Color(rgb(25, 232, 224)),
         Color(rgb(255, 255, 255)),
     ))
+val YuRed = Color(rgb(192,72,81))
