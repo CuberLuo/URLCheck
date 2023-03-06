@@ -19,6 +19,5 @@ class RequestUtil {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         var service: RequestService = retrofit.create(RequestService::class.java)
-
     }
 }
