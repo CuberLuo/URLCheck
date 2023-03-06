@@ -234,7 +234,7 @@ fun SearchText(){
             )*/
             Button(onClick = {
                 isURL= UrlJudgeUtil().getCompleteUrl(text)
-                if (!isURL){
+                if (isURL){
                 val call: Call<ResponseBody> = RequestUtil.service.getQRCode(text)
                 call.enqueue(
                     object : Callback<ResponseBody> {
