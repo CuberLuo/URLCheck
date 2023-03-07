@@ -43,117 +43,15 @@ import retrofit2.Response
 
 @Composable
 fun HomeScreen(){
-    Box(modifier = Modifier
-        .background(Background)
-        .fillMaxSize())
-    {
-        Column {
-            ScreenTitle()
-            SearchText()
+        Box(modifier = Modifier
+            .fillMaxSize())
+        {
+            Column {
+                Spacer(modifier = Modifier.size(70.dp))
+                SearchText()
 
-        }
-        BottomMenu(items = listOf(
-            BottomMenuContent("主页", R.drawable.icon_home) ,
-            BottomMenuContent("设置", R.drawable.icon_setting)
-        ), modifier = Modifier.align(Alignment.BottomCenter))
-
-
-    }
-}
-
-
-@Composable
-fun BottomMenu(
-    items:List<BottomMenuContent>,
-    modifier: Modifier=Modifier,
-    activeHighlightColor: Color= ButtonBlue,
-    activeTextColor: Color= White,
-    inactiveTextColor: Color=DarkBlue ,
-    initialSelectedIndex:Int=0
-){
-    var selectedItemIndex by remember {
-        mutableStateOf(initialSelectedIndex)
-    }
-    Row(
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .background(LightBlue)
-            .padding(15.dp)
-    ) {
-        items.forEachIndexed{index,item->
-            BottomMenuItem(
-                item = item,
-                isSelected = index == selectedItemIndex,
-                activeHighlightColor=activeHighlightColor,
-                activeTextColor=activeTextColor,
-                inactiveTextColor=inactiveTextColor
-            ){
-                selectedItemIndex = index
             }
         }
-    }
-}
-
-@Composable
-fun BottomMenuItem(
-    item:BottomMenuContent,
-    isSelected:Boolean =false,
-    activeTextColor: Color= White,
-    activeHighlightColor:Color= ButtonBlue,
-    inactiveTextColor: Color= DarkBlue,
-    onItemClick:()->Unit
-){
-    Column(horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.clickable { onItemClick() }) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .clip(RoundedCornerShape(10.dp))
-                .background(if (isSelected) activeHighlightColor else Color.Transparent)
-                .padding(10.dp)
-        ){
-            Icon(painter = painterResource(id = item.iconId),
-                contentDescription = item.title,
-                tint = if (isSelected) activeTextColor else inactiveTextColor,
-                modifier = Modifier.size(25.dp))
-        }
-    }
-}
-
-
-@Composable
-fun ScreenTitle() {
-    Box (
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp)
-    ){
-        Row{
-            val imageModifier = Modifier
-                .size(30.dp)
-                .clip(CircleShape)
-
-            val image: Painter = painterResource(id = R.drawable.urlcheck_logo)
-            Image(painter = image,contentDescription = "",imageModifier)
-
-            Text(text="URL Check",
-                modifier=Modifier.padding(horizontal = 10.dp),
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    letterSpacing = (-0.5).sp,
-                    color = White
-                ))
-        }
-
-
-
-
-    }
-
 }
 
 @Composable
@@ -200,7 +98,9 @@ fun SearchText(){
                         horizontalArrangement = Arrangement.SpaceBetween )
                     {
                         Icon(Icons.Default.Search, tint = White, contentDescription = null)
-                        Box(modifier = Modifier.padding(top = 7.dp, bottom = 7.dp, end = 7.dp).fillMaxWidth(0.9f)) {
+                        Box(modifier = Modifier
+                            .padding(top = 7.dp, bottom = 7.dp, end = 7.dp)
+                            .fillMaxWidth(0.9f)) {
                             if(text.isEmpty()){
                                 Text(
                                     text="请输入搜索的URL",
@@ -234,7 +134,7 @@ fun SearchText(){
             )*/
             Button(onClick = {
                 isURL= UrlJudgeUtil().getCompleteUrl(text)
-                if (isURL){
+                if (!isURL){
                 val call: Call<ResponseBody> = RequestUtil.service.getQRCode(text)
                 call.enqueue(
                     object : Callback<ResponseBody> {

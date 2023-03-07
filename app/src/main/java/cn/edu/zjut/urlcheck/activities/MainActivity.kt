@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.semantics.Role.Companion.Button
 import cn.edu.zjut.urlcheck.ui.theme.HomeScreen
 import cn.edu.zjut.urlcheck.ui.theme.URLCheckTheme
+import cn.edu.zjut.urlcheck.ui.theme.UrlCheck
 import cn.edu.zjut.urlcheck.utils.DialogUtil
 import cn.edu.zjut.urlcheck.utils.LogUtil
 import cn.edu.zjut.urlcheck.utils.NetworkCallbackImpl
@@ -35,7 +36,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             URLCheckTheme {
-                HomeScreen()
+//                HomeScreen()
+                UrlCheck()
                 Button(onClick = {
                     val intent = Intent(this, QrCodeScanActivity::class.java)
                     startActivity(intent)
