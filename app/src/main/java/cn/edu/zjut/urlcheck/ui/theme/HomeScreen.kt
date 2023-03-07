@@ -1,11 +1,8 @@
 package cn.edu.zjut.urlcheck.ui.theme
 
-import android.content.Intent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
@@ -15,27 +12,15 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
-import cn.edu.zjut.urlcheck.BottomMenuContent
-import cn.edu.zjut.urlcheck.R
-import cn.edu.zjut.urlcheck.activities.MainActivity
 import cn.edu.zjut.urlcheck.utils.LogUtil
 import cn.edu.zjut.urlcheck.utils.RequestUtil
 import cn.edu.zjut.urlcheck.utils.UrlJudgeUtil
-import com.king.zxing.CaptureActivity
-import com.king.zxing.DecodeConfig
-import com.king.zxing.analyze.MultiFormatAnalyzer
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -134,7 +119,7 @@ fun SearchText(){
             )*/
             Button(onClick = {
                 isURL= UrlJudgeUtil().getCompleteUrl(text)
-                if (!isURL){
+                if (isURL){
                 val call: Call<ResponseBody> = RequestUtil.service.getQRCode(text)
                 call.enqueue(
                     object : Callback<ResponseBody> {
@@ -159,7 +144,7 @@ fun SearchText(){
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier
                     .padding(8.dp, 0.dp)
-                    .fillMaxWidth(1f)
+                    .fillMaxWidth()
                     .height(43.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = ButtonBlue,

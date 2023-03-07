@@ -56,7 +56,6 @@ fun ScreenTitle() {
 
             val image: Painter = painterResource(id = R.drawable.urlcheck_logo)
             Image(painter = image,contentDescription = "",imageModifier)
-
             Text(text="URL Check",
                 modifier=Modifier.padding(horizontal = 10.dp),
                 style = TextStyle(
