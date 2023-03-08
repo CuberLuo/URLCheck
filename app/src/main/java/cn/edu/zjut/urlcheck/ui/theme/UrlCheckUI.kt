@@ -1,6 +1,5 @@
 package cn.edu.zjut.urlcheck.ui.theme
 
-import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,20 +22,18 @@ import cn.edu.zjut.urlcheck.BottomMenuContent
 import cn.edu.zjut.urlcheck.R
 
 @Composable
-fun UrlCheck(content:String){
+fun UrlCheck(){
     Box(modifier = Modifier
         .background(Background)
         .fillMaxSize())
     {
         Column {
             ScreenTitle()
-//            SearchText()
         }
         BottomMenu(items = listOf(
             BottomMenuContent("主页", R.drawable.icon_home) ,
             BottomMenuContent("设置", R.drawable.icon_setting)
-        ), modifier = Modifier.align(Alignment.BottomCenter)
-        , content = content)
+        ), modifier = Modifier.align(Alignment.BottomCenter))
 
     }
 }
@@ -80,8 +77,7 @@ fun BottomMenu(
     activeHighlightColor: Color = ButtonBlue,
     activeTextColor: Color = White,
     inactiveTextColor: Color =DarkBlue,
-    initialSelectedIndex:Int=0,
-    content:String
+    initialSelectedIndex:Int=0
 ){
     var selectedItemIndex by remember {
         mutableStateOf(initialSelectedIndex)
@@ -107,7 +103,7 @@ fun BottomMenu(
         }
     }
     when(selectedItemIndex) { // 根据state值的变化动态切换当面显示的页面
-        0 -> HomeScreen(content)
+        0 -> HomeScreen()
         1 -> SettingSreen()
     }
 }

@@ -1,9 +1,6 @@
 package cn.edu.zjut.urlcheck.ui.theme
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -24,11 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContextCompat.startActivity
-import cn.edu.zjut.urlcheck.activities.MainActivity
 import cn.edu.zjut.urlcheck.activities.QrCodeScanActivity
 import cn.edu.zjut.urlcheck.utils.LogUtil
 import cn.edu.zjut.urlcheck.utils.RequestUtil
@@ -40,7 +33,7 @@ import retrofit2.Response
 
 
 @Composable
-fun HomeScreen(content:String){
+fun HomeScreen(){
 
         Box(modifier = Modifier
             .fillMaxSize())
@@ -48,12 +41,12 @@ fun HomeScreen(content:String){
             Column {
                 Spacer(modifier = Modifier.size(70.dp))
                 ScanQrCode()
-                SearchText(content)
+                SearchText()
 
             }
         }
 }
-
+var resultsText by mutableStateOf("There is no result")
 @Composable
 fun ScanQrCode(){
     Box(Modifier
@@ -68,7 +61,29 @@ fun ScanQrCode(){
             val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()){ activityResult ->
                 activityResult.data?.apply {
                     val result = getStringExtra("SCAN_RESULT").toString()
+                    //resultsText=result
                     LogUtil.logInfo(result)
+                    if(!UrlJudgeUtil().getCompleteUrl(result)){
+                        resultsText="扫码结果:$result\n\n该二维码不包含URL链接"
+                    }else{
+                        val call: Call<ResponseBody> = RequestUtil.service.getQRCode(result)
+                        call.enqueue(
+                            object : Callback<ResponseBody> {
+                                override fun onResponse(
+                                    call: Call<ResponseBody>,
+                                    response: Response<ResponseBody>
+                                ) {
+                                    val s: String = response.body()!!.string()
+                                    resultsText="扫码结果$result\n\n$s"
+                                }
+
+                                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                                    resultsText=t.toString()
+
+                                }
+                            }
+                        )
+                    }
                 }
             }
             Button(
@@ -93,13 +108,10 @@ fun ScanQrCode(){
 }
 
 @Composable
-fun SearchText(content:String){
+fun SearchText(){
 
     var text by remember {
         mutableStateOf("") }
-    var resultsText by remember {
-        mutableStateOf(content)
-    }
     var isURL by remember {
         mutableStateOf(true) }
 
@@ -150,7 +162,7 @@ fun SearchText(content:String){
                             }
                             innerTextField()
                         }
-                        if(!text.isEmpty()){
+                        if(text.isNotEmpty()){
                             Icon(Icons.Default.Close, tint = Color(107, 118, 179),
                                 contentDescription = null,
                                 modifier = Modifier.clickable { text="" }

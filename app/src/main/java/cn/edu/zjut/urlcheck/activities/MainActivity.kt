@@ -1,7 +1,6 @@
 package cn.edu.zjut.urlcheck.activities
 
 import android.content.Context
-import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
@@ -9,16 +8,9 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import cn.edu.zjut.urlcheck.ui.theme.URLCheckTheme
 import cn.edu.zjut.urlcheck.ui.theme.UrlCheck
 import cn.edu.zjut.urlcheck.utils.DialogUtil
-import cn.edu.zjut.urlcheck.utils.LogUtil
 import cn.edu.zjut.urlcheck.utils.NetworkCallbackImpl
 
 
@@ -28,7 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             URLCheckTheme {
-                UrlCheck("There is no result")
+                UrlCheck()
             }
         }
 
