@@ -15,6 +15,7 @@ val LightBlue=Color(rgb(41, 52, 128))
 val BabyBlue=Color(rgb(50, 61, 122))
 val CardBlue=Color(rgb(58, 70, 140))
 val ButtonBlue=Color(rgb(41, 116, 246))
+val QrTextColor=Color(rgb(164, 170, 201))
 val ButtonBlueBrush= Brush.horizontalGradient(
     listOf(
         Color(rgb(41, 116, 246)),

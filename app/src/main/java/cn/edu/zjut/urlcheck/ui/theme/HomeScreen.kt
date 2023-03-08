@@ -1,5 +1,10 @@
 package cn.edu.zjut.urlcheck.ui.theme
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,10 +19,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.core.content.ContextCompat.startActivity
+import cn.edu.zjut.urlcheck.activities.MainActivity
+import cn.edu.zjut.urlcheck.activities.QrCodeScanActivity
 import cn.edu.zjut.urlcheck.utils.LogUtil
 import cn.edu.zjut.urlcheck.utils.RequestUtil
 import cn.edu.zjut.urlcheck.utils.UrlJudgeUtil
@@ -26,25 +37,67 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 @Composable
-fun HomeScreen(){
+fun HomeScreen(context: Context,content:String){
+
         Box(modifier = Modifier
             .fillMaxSize())
         {
             Column {
                 Spacer(modifier = Modifier.size(70.dp))
-                SearchText()
+                ScanQrCode(context)
+                SearchText(content)
 
             }
         }
 }
 
 @Composable
-fun SearchText(){
+fun ScanQrCode(context:Context){
+    Box(Modifier
+        .fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ){
+        Column(
+            modifier = Modifier.padding(15.dp),
+            verticalArrangement = Arrangement.Center
+        ){
+            val target = Intent(LocalContext.current, QrCodeScanActivity::class.java)
+            val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
+                LogUtil.logInfo(it.toString())
+            }
+            Button(
+                onClick = {
+                    //launcher.launch(target.toString())
+                    val intent = Intent(context, QrCodeScanActivity::class.java)
+                    //startActivity(context, intent, null)
+                    startActivityForResult(context as Activity,intent,1,null)
+                },
+                modifier = Modifier.size(130.dp,130.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = CardBlue)) {
+                Text(text = "scan", color = Color.White)
+            }
+            Text(text = "二维码检测",
+                color = QrTextColor,
+                modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+                    .padding(0.dp,10.dp)
+            )
+
+        }
+
+    }
+
+
+}
+
+@Composable
+fun SearchText(content:String){
+
     var text by remember {
         mutableStateOf("") }
     var resultsText by remember {
-        mutableStateOf("There is no result")
+        mutableStateOf(content)
     }
     var isURL by remember {
         mutableStateOf(true) }
@@ -56,7 +109,7 @@ fun SearchText(){
         contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier.padding(15.dp),
+            modifier = Modifier.padding(15.dp,0.dp),
             verticalArrangement = Arrangement.Center
         ) {
             BasicTextField(

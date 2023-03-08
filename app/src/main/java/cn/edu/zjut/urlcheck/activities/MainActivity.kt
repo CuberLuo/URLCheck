@@ -6,44 +6,44 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.semantics.Role.Companion.Button
-import cn.edu.zjut.urlcheck.ui.theme.HomeScreen
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import cn.edu.zjut.urlcheck.ui.theme.URLCheckTheme
 import cn.edu.zjut.urlcheck.ui.theme.UrlCheck
 import cn.edu.zjut.urlcheck.utils.DialogUtil
 import cn.edu.zjut.urlcheck.utils.LogUtil
 import cn.edu.zjut.urlcheck.utils.NetworkCallbackImpl
-import cn.edu.zjut.urlcheck.utils.RequestUtil
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.lang.ref.WeakReference
 
 
 class MainActivity : ComponentActivity() {
 
+    /*override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        //val extraData=intent.getStringExtra("SCAN_RESULT")
+        val extraData = data?.extras?.getString("SCAN_RESULT")
+        LogUtil.logInfo(extraData.toString())
+
+        //setContent(){
+        //    URLCheckTheme {
+        //        UrlCheck(this,extraData.toString())
+        //    }
+        //}
+    }*/
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //val extraData=intent.getStringExtra("SCAN_RESULT")
+        //LogUtil.logInfo(extraData.toString())
         setContent {
             URLCheckTheme {
-//                HomeScreen()
-                UrlCheck()
-                Button(onClick = {
-                    val intent = Intent(this, QrCodeScanActivity::class.java)
-                    startActivity(intent)
-                }) {
-                    Text(text = "scan")
-                }
+                UrlCheck(this,"There is no result")
             }
         }
 

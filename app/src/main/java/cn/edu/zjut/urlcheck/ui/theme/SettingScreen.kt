@@ -1,5 +1,6 @@
 package cn.edu.zjut.urlcheck.ui.theme
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 
@@ -24,7 +25,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import cn.edu.zjut.urlcheck.R
+import cn.edu.zjut.urlcheck.activities.QrCodeScanActivity
 
 @Composable
 fun SettingSreen(){
