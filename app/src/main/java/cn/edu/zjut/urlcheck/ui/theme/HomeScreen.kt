@@ -3,6 +3,7 @@ package cn.edu.zjut.urlcheck.ui.theme
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -39,14 +40,14 @@ import retrofit2.Response
 
 
 @Composable
-fun HomeScreen(context: Context,content:String){
+fun HomeScreen(content:String){
 
         Box(modifier = Modifier
             .fillMaxSize())
         {
             Column {
                 Spacer(modifier = Modifier.size(70.dp))
-                ScanQrCode(context)
+                ScanQrCode()
                 SearchText(content)
 
             }
@@ -54,7 +55,7 @@ fun HomeScreen(context: Context,content:String){
 }
 
 @Composable
-fun ScanQrCode(context:Context){
+fun ScanQrCode(){
     Box(Modifier
         .fillMaxWidth(),
         contentAlignment = Alignment.Center
@@ -64,15 +65,15 @@ fun ScanQrCode(context:Context){
             verticalArrangement = Arrangement.Center
         ){
             val target = Intent(LocalContext.current, QrCodeScanActivity::class.java)
-            val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
-                LogUtil.logInfo(it.toString())
+            val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()){ activityResult ->
+                activityResult.data?.apply {
+                    val result = getStringExtra("SCAN_RESULT").toString()
+                    LogUtil.logInfo(result)
+                }
             }
             Button(
                 onClick = {
-                    //launcher.launch(target.toString())
-                    val intent = Intent(context, QrCodeScanActivity::class.java)
-                    //startActivity(context, intent, null)
-                    startActivityForResult(context as Activity,intent,1,null)
+                    launcher.launch(target)
                 },
                 modifier = Modifier.size(130.dp,130.dp),
                 colors = ButtonDefaults.buttonColors(backgroundColor = CardBlue)) {

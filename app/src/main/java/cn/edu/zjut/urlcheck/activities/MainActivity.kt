@@ -24,26 +24,11 @@ import cn.edu.zjut.urlcheck.utils.NetworkCallbackImpl
 
 class MainActivity : ComponentActivity() {
 
-    /*override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        //val extraData=intent.getStringExtra("SCAN_RESULT")
-        val extraData = data?.extras?.getString("SCAN_RESULT")
-        LogUtil.logInfo(extraData.toString())
-
-        //setContent(){
-        //    URLCheckTheme {
-        //        UrlCheck(this,extraData.toString())
-        //    }
-        //}
-    }*/
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //val extraData=intent.getStringExtra("SCAN_RESULT")
-        //LogUtil.logInfo(extraData.toString())
         setContent {
             URLCheckTheme {
-                UrlCheck(this,"There is no result")
+                UrlCheck("There is no result")
             }
         }
 

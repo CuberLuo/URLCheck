@@ -23,7 +23,7 @@ import cn.edu.zjut.urlcheck.BottomMenuContent
 import cn.edu.zjut.urlcheck.R
 
 @Composable
-fun UrlCheck(context: Context,content:String){
+fun UrlCheck(content:String){
     Box(modifier = Modifier
         .background(Background)
         .fillMaxSize())
@@ -36,7 +36,7 @@ fun UrlCheck(context: Context,content:String){
             BottomMenuContent("主页", R.drawable.icon_home) ,
             BottomMenuContent("设置", R.drawable.icon_setting)
         ), modifier = Modifier.align(Alignment.BottomCenter)
-        ,context=context, content = content)
+        , content = content)
 
     }
 }
@@ -81,7 +81,6 @@ fun BottomMenu(
     activeTextColor: Color = White,
     inactiveTextColor: Color =DarkBlue,
     initialSelectedIndex:Int=0,
-    context:Context,
     content:String
 ){
     var selectedItemIndex by remember {
@@ -108,7 +107,7 @@ fun BottomMenu(
         }
     }
     when(selectedItemIndex) { // 根据state值的变化动态切换当面显示的页面
-        0 -> HomeScreen(context,content)
+        0 -> HomeScreen(content)
         1 -> SettingSreen()
     }
 }
