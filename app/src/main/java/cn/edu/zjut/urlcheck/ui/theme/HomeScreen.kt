@@ -68,16 +68,7 @@ fun ScanQrCode() {
         ) {
             val context = LocalContext.current
             val target = Intent(context, QrCodeScanActivity::class.java)
-            val permissionLauncher = rememberLauncherForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { isGranted: Boolean ->
-                if (isGranted) {
-                    LogUtil.logInfo("PERMISSION GRANTED")
-                } else {
-                    Toast.makeText(context,"相机权限未开启!",Toast.LENGTH_SHORT).show()
-                    LogUtil.logInfo("PERMISSION DENIED")
-                }
-            }
+
             val launcher =
                 rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
                     activityResult.data?.apply {
@@ -107,6 +98,17 @@ fun ScanQrCode() {
                         }
                     }
                 }
+            val permissionLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                    LogUtil.logInfo("PERMISSION GRANTED")
+                    launcher.launch(target)
+                } else {
+                    Toast.makeText(context,"相机权限未开启!",Toast.LENGTH_SHORT).show()
+                    LogUtil.logInfo("PERMISSION DENIED")
+                }
+            }
             Button(
                 onClick = {
                     when (PackageManager.PERMISSION_GRANTED){

@@ -23,7 +23,7 @@ import com.king.zxing.util.CodeUtils
 
 
 class QrCodeScanActivity : CaptureActivity() {
-    val REQUEST_CODE_PHOTO = 0X02
+    private val REQUEST_CODE_PHOTO = 0X02
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -61,29 +61,31 @@ class QrCodeScanActivity : CaptureActivity() {
         val bitmap = ImageDecoder.decodeBitmap(source)*/
         //异步解析
         Thread {
-            try {
-                val result = CodeUtils.parseCode(bitmap)
-                //LogUtil.logInfo(result)
-                runOnUiThread {
-                    val intent = Intent()
-                    intent.putExtra("SCAN_RESULT",result)
-                    setResult(Activity.RESULT_OK,intent)//携带扫码结果返回主页面
-                    finish()
+            runOnUiThread {
+                try {
+                    val result = CodeUtils.parseCode(bitmap)
+                    if(result==null){
+                        showNoneQrCode()
+                    }else{
+                        val intent = Intent()
+                        intent.putExtra("SCAN_RESULT", result)
+                        setResult(Activity.RESULT_OK, intent)//携带扫码结果返回主页面
+                        finish()
+                    }
+                } catch (e: NullPointerException) {
+                    showNoneQrCode()
                 }
-            } catch (e: NullPointerException) {
-                runOnUiThread{
-                    AlertDialog.Builder(this)
-                        .setMessage("照片中未识别到二维码")
-                        .setPositiveButton("确定"){dialog, which -> run {} }
-                        .create()
-                        .show()
-                }
-
             }
-
-
         }.start()
 
+    }
+
+    private fun showNoneQrCode(){
+        AlertDialog.Builder(this)
+            .setMessage("照片中未识别到二维码")
+            .setPositiveButton("确定") { dialog, which -> run {} }
+            .create()
+            .show()
     }
 
     override fun onScanResultCallback(result: Result?): Boolean {
