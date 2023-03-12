@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!--震动权限-->
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <!--读取手机相册-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <application
         android:allowBackup="true"

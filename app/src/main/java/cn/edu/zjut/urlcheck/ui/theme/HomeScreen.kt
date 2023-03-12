@@ -3,7 +3,6 @@ package cn.edu.zjut.urlcheck.ui.theme
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,19 +18,24 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cn.edu.zjut.urlcheck.activities.QrCodeScanActivity
-import cn.edu.zjut.urlcheck.utils.DialogUtil
-import cn.edu.zjut.urlcheck.utils.LogUtil
-import cn.edu.zjut.urlcheck.utils.RequestUtil
-import cn.edu.zjut.urlcheck.utils.UrlJudgeUtil
+import cn.edu.zjut.urlcheck.utils.*
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,7 +44,6 @@ import retrofit2.Response
 
 @Composable
 fun HomeScreen() {
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -50,6 +53,7 @@ fun HomeScreen() {
             Spacer(modifier = Modifier.size(70.dp))
             ScanQrCode()
             SearchText()
+            NetworkDetection()
         }
     }
 }
@@ -105,13 +109,13 @@ fun ScanQrCode() {
                     LogUtil.logInfo("PERMISSION GRANTED")
                     launcher.launch(target)
                 } else {
-                    Toast.makeText(context,"相机权限未开启!",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "相机权限未开启!", Toast.LENGTH_SHORT).show()
                     LogUtil.logInfo("PERMISSION DENIED")
                 }
             }
             Button(
                 onClick = {
-                    when (PackageManager.PERMISSION_GRANTED){
+                    when (PackageManager.PERMISSION_GRANTED) {
                         ContextCompat.checkSelfPermission(
                             context,
                             Manifest.permission.CAMERA
@@ -217,16 +221,6 @@ fun SearchText() {
                     }
                 }
             )
-            /*val openNormAlertDialog = remember {
-                mutableStateOf(false)
-            }
-            val msg = remember {
-                mutableStateOf("")
-            }
-            AlertDialogComponent(
-                dialogState = openNormAlertDialog,
-                msg=msg.value
-            )*/
             Button(
                 onClick = {
                     isURL = UrlJudgeUtil().getCompleteUrl(text)
@@ -239,8 +233,6 @@ fun SearchText() {
                                     response: Response<ResponseBody>
                                 ) {
                                     val s: String = response.body()!!.string()
-//                            msg.value=s
-//                            openNormAlertDialog.value = !openNormAlertDialog.value
                                     resultsText = s
                                     focusManager.clearFocus()
                                 }
@@ -276,40 +268,6 @@ fun SearchText() {
             LabelCard(resultsText)
         }
     }
-
-
-}
-
-@Composable
-fun AlertDialogComponent(
-    dialogState: MutableState<Boolean>,
-    msg: String
-) {
-    if (dialogState.value) {
-        AlertDialog(
-            onDismissRequest = { dialogState.value = false },
-            title = { Text(text = "请求结果") },
-            text = { Text(text = msg) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        dialogState.value = false
-                    }
-                ) {
-                    Text(text = "确定")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        dialogState.value = false
-                    }
-                ) {
-                    Text(text = "取消")
-                }
-            }
-        )
-    }
 }
 
 @Composable
@@ -337,6 +295,71 @@ fun LabelCard(
             }
         }
     }
+}
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
+@Composable
+fun NetworkDetection() {
+    val context = LocalContext.current
+    var statusColor:Color
+    var statusText:String
+    val status by NetWorkManager(context).observe()
+        .collectAsStateWithLifecycle(ConnectivityObserver.Status.Unavailable)
 
+    if(NetWorkManager(context).isNetWorkConnected()){
+        statusText="网络良好"
+        statusColor=Color.Green
+    }else{
+        statusText="网络异常"
+        statusColor=Color.Red
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        if(status.toString()=="Available"){
+            statusText="网络良好"
+            statusColor=Color.Green
+        }else{
+            statusText="网络异常"
+            statusColor=Color.Red
+        }
+        Card(
+            shape = RoundedCornerShape(50.dp),
+            modifier = Modifier
+                .fillMaxWidth(0.3f)
+                .height(40.dp)
+                .networkPoint(statusColor)
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(CardBlue)
+
+            ) {
+                Text(
+                    text = statusText,
+                    fontSize= 15.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(10.dp, 0.dp, 0.dp, 0.dp)
+                )
+            }
+        }
+    }
+
+}
+
+fun Modifier.networkPoint(statusColor:Color): Modifier = drawWithContent {
+    drawContent()
+    drawIntoCanvas {
+        val paint = Paint().apply {
+            color = statusColor
+        }
+        it.drawCircle(
+            center = Offset(x = size.width/7, y = size.height/2),
+            radius = (4.dp).toPx(),
+            paint = paint
+        )
+    }
 }
