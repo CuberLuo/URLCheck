@@ -149,4 +149,8 @@ class QrCodeScanActivity : CaptureActivity() {
             Toast.makeText(this, "请授权媒体访问权限", Toast.LENGTH_SHORT).show()
         }
     }
+
+    fun backView(v:View){
+        finish()
+    }
 }

@@ -9,11 +9,10 @@
         <selector>
             <item>
                 <shape android:shape="oval">
-                    <corners android:radius="20dp" />
                     <solid android:color="#8396AD" />
                     <size
                         android:width="100dp"
-                        android:height="162dp" />
+                        android:height="100dp" />
                 </shape>
             </item>
 
