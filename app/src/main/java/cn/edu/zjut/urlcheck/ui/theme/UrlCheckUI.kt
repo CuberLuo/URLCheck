@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -24,7 +25,7 @@ import cn.edu.zjut.urlcheck.R
 @Composable
 fun UrlCheck(){
     Box(modifier = Modifier
-        .background(Background)
+        .background(urlCheckColors.backgroundColor)
         .fillMaxSize())
     {
         Column {
@@ -59,7 +60,7 @@ fun ScreenTitle() {
                 style = TextStyle(
                     fontSize = 20.sp,
                     letterSpacing = (-0.5).sp,
-                    color = White
+                    color = urlCheckColors.textColor
                 ))
         }
 
@@ -87,7 +88,7 @@ fun BottomMenu(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .background(LightBlue)
+            .background(urlCheckColors.bottomMenuColor)
             .padding(15.dp)
     ) {
         items.forEachIndexed{index,item->

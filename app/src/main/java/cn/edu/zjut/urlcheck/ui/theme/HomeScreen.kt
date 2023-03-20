@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,12 +21,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cn.edu.zjut.urlcheck.R
 import cn.edu.zjut.urlcheck.activities.QrCodeScanActivity
 import cn.edu.zjut.urlcheck.utils.*
 import okhttp3.ResponseBody
@@ -131,13 +136,18 @@ fun ScanQrCode() {
 
                 },
                 modifier = Modifier.size(130.dp, 130.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = CardBlue)
+                colors = ButtonDefaults.buttonColors(backgroundColor = urlCheckColors.cardColor)
             ) {
-                Text(text = "scan", color = Color.White)
+                Image(
+                    painter = painterResource(id = R.drawable.camera),
+                    contentDescription = null,
+                    modifier = Modifier.size(80.dp,80.dp)
+                )
+
             }
             Text(
                 text = "二维码检测",
-                color = QrTextColor,
+                color = urlCheckColors.textColor,
                 modifier = Modifier
                     .align(alignment = Alignment.CenterHorizontally)
                     .padding(0.dp, 10.dp)
@@ -177,20 +187,32 @@ fun SearchText() {
                 onValueChange = {
                     text = it
                 },
-                textStyle = TextStyle(color = White),
-                cursorBrush = SolidColor(White),
+                textStyle = TextStyle(color = urlCheckColors.textColor),
+                cursorBrush = SolidColor(urlCheckColors.textColor),
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth()
-                    .background(BabyBlue, RoundedCornerShape(percent = 30))
+                    .background(
+                        urlCheckColors.searchTextFieldColor,
+                        RoundedCornerShape(percent = 30)
+                    )
                     .padding(5.dp)
-                    .background(BabyBlue, RoundedCornerShape(percent = 29)),
+                    .background(
+                        urlCheckColors.searchTextFieldColor,
+                        RoundedCornerShape(percent = 29)
+                    ),
                 decorationBox = { innerTextField ->
                     Row(
                         Modifier
-                            .background(BabyBlue, RoundedCornerShape(percent = 30))
+                            .background(
+                                urlCheckColors.searchTextFieldColor,
+                                RoundedCornerShape(percent = 30)
+                            )
                             .padding(0.dp)
-                            .background(BabyBlue, RoundedCornerShape(percent = 29)),
+                            .background(
+                                urlCheckColors.searchTextFieldColor,
+                                RoundedCornerShape(percent = 29)
+                            ),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     )
@@ -205,14 +227,14 @@ fun SearchText() {
                                 Text(
                                     text = "请输入搜索的URL",
                                     style = TextStyle(
-                                        color = Color(107, 118, 179)
+                                        color = urlCheckColors.placeholderTextColor
                                     )
                                 )
                             }
                             innerTextField()
                         }
                         if (text.isNotEmpty()) {
-                            Icon(Icons.Default.Close, tint = Color(107, 118, 179),
+                            Icon(Icons.Default.Close, tint = urlCheckColors.placeholderTextColor,
                                 contentDescription = null,
                                 modifier = Modifier.clickable { text = "" }
                             )
@@ -222,6 +244,7 @@ fun SearchText() {
                     }
                 }
             )
+
             Button(
                 onClick = {
                     isURL = UrlJudgeUtil().getCompleteUrl(text)
@@ -290,12 +313,12 @@ fun LabelCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(CardBlue)
+                    .background(urlCheckColors.cardColor)
 
             ) {
                 Text(
                     text = resultsText,
-                    color = White,
+                    color = urlCheckColors.textColor,
                     maxLines=8,
                     overflow=TextOverflow.Ellipsis,
                     modifier = Modifier.padding(15.dp)
@@ -341,11 +364,12 @@ fun NetworkDetection() {
         ) {
             Box(
                 modifier = Modifier
-                    .background(CardBlue)
+                    .background(urlCheckColors.cardColor)
 
             ) {
                 Text(
                     text = statusText,
+                    color= urlCheckColors.textColor,
                     fontSize= 15.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier

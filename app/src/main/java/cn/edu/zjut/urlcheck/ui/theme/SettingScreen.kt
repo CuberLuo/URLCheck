@@ -15,6 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -40,7 +42,8 @@ fun SettingSreen(){
 
 @Composable
 fun ChangeTheme(){
-    val checkedState = remember { mutableStateOf(true) }
+    val urlCheckColors= LocalURLCheckColors.current
+    val checkedState = remember { mutableStateOf(!urlCheckColors.getMode()) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -64,19 +67,23 @@ fun ChangeTheme(){
                 style = TextStyle(
                     fontSize = 19.sp,
                     letterSpacing = (-0.5).sp,
-                    color = White,
+                    color = urlCheckColors.textColor,
                     fontWeight = FontWeight.W500
                 ))
+            val urlCheckColors= LocalURLCheckColors.current
             Switch(
                 modifier=Modifier
                     .align(Alignment.CenterVertically),
                 checked = checkedState.value,
                 colors= SwitchDefaults.colors(
+                    uncheckedThumbColor= White,
                     checkedThumbColor= White,          //启用和选中时用于拇指的颜色
+                    uncheckedTrackColor= Gray,
                     checkedTrackColor= ButtonBlue,             //启用和选中时用于轨道的颜色
                 ),
                 onCheckedChange = {
                     checkedState.value = it
+                    urlCheckColors.toggleTheme()
                 }
             )
 
@@ -107,12 +114,12 @@ fun MonitoringPage(){
                     .align(Alignment.CenterVertically)
                     .fillMaxWidth(0.8f),
                 style = TextStyle(
-                    color = White,
+                    color = urlCheckColors.textColor,
                     fontSize = 19.sp,
                     letterSpacing = (-0.5).sp,
                     fontWeight = FontWeight.W500
                 ))
-            Icon(Icons.Default.KeyboardArrowRight, tint = White, contentDescription = null, modifier = Modifier.align(Alignment.CenterVertically))
+            Icon(Icons.Default.KeyboardArrowRight, tint = urlCheckColors.textColor, contentDescription = null, modifier = Modifier.align(Alignment.CenterVertically))
         }
     }
 }
@@ -140,12 +147,12 @@ fun HelpingPage(){
                     .align(Alignment.CenterVertically)
                     .fillMaxWidth(0.8f),
                 style = TextStyle(
-                    color = White,
+                    color = urlCheckColors.textColor,
                     fontSize = 19.sp,
                     letterSpacing = (-0.5).sp,
                     fontWeight = FontWeight.W500
                 ))
-            Icon(Icons.Default.KeyboardArrowRight, tint = White, contentDescription = null, modifier = Modifier.align(Alignment.CenterVertically))
+            Icon(Icons.Default.KeyboardArrowRight, tint = urlCheckColors.textColor, contentDescription = null, modifier = Modifier.align(Alignment.CenterVertically))
         }
     }
 }

@@ -4,16 +4,19 @@ import android.graphics.Color.rgb
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)
-val White =Color(rgb(255,255,255))
-val Background=Color(rgb(29, 37, 90))
+val TextLightMode=Color(108, 108, 110)
+val TextDarkMode=Color(255,255,255)
+val BackgroundLightMode=Color(230, 233, 252)
+val BackgroundDarkMode=Color(29, 37, 90)
+val BottomMenuLightMode=Color(64, 83, 194)
+val BottomMenuDarkMode=Color(41, 52, 128)
+val CardLightMode=Color(161, 168, 207)
+val CardDarkMode=Color(58, 70, 140)
+val PlaceHolderDarkMode=Color(107, 118, 179)
+val SearchTextFieldDarkMode=Color(50, 61, 122)
+
 val DarkBlue=Color(rgb(100, 130, 180))
-val LightBlue=Color(rgb(41, 52, 128))
 val BabyBlue=Color(rgb(50, 61, 122))
-val CardBlue=Color(rgb(58, 70, 140))
 val ButtonBlue=Color(rgb(41, 116, 246))
 val QrTextColor=Color(rgb(164, 170, 201))
 val ButtonBlueBrush= Brush.horizontalGradient(
