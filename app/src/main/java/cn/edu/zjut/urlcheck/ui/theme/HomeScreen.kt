@@ -61,14 +61,6 @@ fun HomeScreen() {
             ScanQrCode()
             SearchText()
             NetworkDetection()
-            val context = LocalContext.current
-            Button(onClick = {
-                val uri = Uri.parse("http://www.zjut.edu.cn")
-                val intent = Intent(Intent.ACTION_VIEW, uri)
-                context.startActivity(intent)
-            }) {
-                Text("跳转到浏览器")
-            }
         }
     }
 }
@@ -114,6 +106,9 @@ fun ScanQrCode() {
                                     }
                                 }
                             )
+                            val uri = Uri.parse(result)
+                            val intent = Intent(Intent.ACTION_VIEW, uri)
+                            context.startActivity(intent)
                         }
                     }
                 }
@@ -253,7 +248,7 @@ fun SearchText() {
                     }
                 }
             )
-
+            val context = LocalContext.current
             Button(
                 onClick = {
                     isURL = UrlJudgeUtil().getCompleteUrl(text)
@@ -276,6 +271,9 @@ fun SearchText() {
                                 }
                             }
                         )
+                        val uri = Uri.parse(text)
+                        val intent = Intent(Intent.ACTION_VIEW, uri)
+                        context.startActivity(intent)
                     }
                 },
                 shape = RoundedCornerShape(20.dp),
@@ -297,6 +295,8 @@ fun SearchText() {
                 ) {
                     Text(text = "请输入有效的URL!", color = YuRed, fontWeight = FontWeight.W700)
                 }
+            }else{
+
             }
             LabelCard(resultsText)
         }
