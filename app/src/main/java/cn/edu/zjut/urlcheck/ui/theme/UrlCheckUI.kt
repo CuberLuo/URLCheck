@@ -8,7 +8,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,7 +40,6 @@ fun UrlCheck(){
             BottomMenuContent("主页", R.drawable.icon_home) ,
             BottomMenuContent("设置", R.drawable.icon_setting)
         ), modifier = Modifier.align(Alignment.BottomCenter))
-
     }
 }
 
@@ -63,10 +67,6 @@ fun ScreenTitle() {
                     color = urlCheckColors.textColor
                 ))
         }
-
-
-
-
     }
 
 }
@@ -80,7 +80,7 @@ fun BottomMenu(
     inactiveTextColor: Color =DarkBlue,
     initialSelectedIndex:Int=0
 ){
-    var selectedItemIndex by remember {
+    var selectedItemIndex by rememberSaveable  {
         mutableStateOf(initialSelectedIndex)
     }
     Row(
@@ -103,9 +103,12 @@ fun BottomMenu(
             }
         }
     }
-    when(selectedItemIndex) { // 根据state值的变化动态切换当面显示的页面
-        0 -> HomeScreen()
-        1 -> SettingSreen()
+    val saveableStateHolder = rememberSaveableStateHolder()
+    saveableStateHolder.SaveableStateProvider(selectedItemIndex) {
+        when(selectedItemIndex){
+            0-> HomeScreen()
+            1-> SettingScreen()
+        }
     }
 }
 

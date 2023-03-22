@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -167,10 +168,10 @@ fun ScanQrCode() {
 @Composable
 fun SearchText() {
 
-    var text by remember {
+    var text by rememberSaveable {
         mutableStateOf("")
     }
-    var isURL by remember {
+    var isURL by rememberSaveable {
         mutableStateOf(true)
     }
 
