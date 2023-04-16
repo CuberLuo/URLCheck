@@ -299,7 +299,9 @@ fun SearchText() {
                 }
             )
             val context = LocalContext.current
-
+            var hintText by rememberSaveable {
+                mutableStateOf("")
+            }
             Button(
                 onClick = {
                     isURL = UrlJudgeUtil().getCompleteUrl(text)
@@ -366,6 +368,12 @@ fun SearchText() {
                                 }
                             }
                         )
+                    }else{
+                        if (!text.startsWith("http://") && !text.startsWith("https://")){
+                            hintText="请检查URL是否缺失http://或https://"
+                        }else{
+                            hintText="请输入有效的URL!"
+                        }
                     }
                 },
                 shape = RoundedCornerShape(20.dp),
@@ -386,12 +394,6 @@ fun SearchText() {
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    var hintText=""
-                    hintText = if (!text.startsWith("http://") && !text.startsWith("https://")) {
-                        "请检查URL是否缺失http://或https://"
-                    }else{
-                        "请输入有效的URL!"
-                    }
                     Text(text = hintText, color = YuRed, fontWeight = FontWeight.W700)
                 }
             }
