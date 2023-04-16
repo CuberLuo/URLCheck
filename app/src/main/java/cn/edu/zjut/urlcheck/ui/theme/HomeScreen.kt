@@ -1,6 +1,7 @@
 package cn.edu.zjut.urlcheck.ui.theme
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -11,6 +12,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
@@ -34,17 +36,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cn.edu.zjut.urlcheck.R
 import cn.edu.zjut.urlcheck.activities.QrCodeScanActivity
 import cn.edu.zjut.urlcheck.utils.*
+import coil.compose.AsyncImage
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -67,7 +70,7 @@ fun HomeScreen() {
 }
 
 var resultsText by mutableStateOf("There is no result")
-
+var loadingState by mutableStateOf(false)
 @Composable
 fun ScanQrCode() {
     Box(
@@ -90,26 +93,72 @@ fun ScanQrCode() {
                         if (!UrlJudgeUtil().getCompleteUrl(result)) {
                             resultsText = "扫码结果:$result\n\n该二维码不包含URL链接"
                         } else {
-                            val call: Call<ResponseBody> = RequestUtil.service.getQRCode(result)
+                            val json = JSONObject()
+                            json.put("url", result)
+                            val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+                            loadingState=true
+                            val call: Call<ResponseBody> = RequestUtil.service.checkURL(requestBody)
                             call.enqueue(
                                 object : Callback<ResponseBody> {
                                     override fun onResponse(
                                         call: Call<ResponseBody>,
                                         response: Response<ResponseBody>
                                     ) {
-                                        val s: String = response.body()!!.string()
-                                        resultsText = "扫码结果$result\n\n$s"
+                                        try{
+                                            loadingState=false
+                                            val jsonData: String = response.body()!!.string()
+                                            val jsonObj = JSONObject(jsonData)
+                                            val code = jsonObj.getString("code")
+                                            if(code=="200"){
+                                                val data = jsonObj.getJSONObject("data")
+                                                val label = data.getString("label")
+                                                val label2 = data.getString("label2")
+                                                val src = data.getString("src")
+                                                if(label!="0"&&label2!="0"){
+                                                    val type=ConvertUtil.toType(label)
+                                                    val type2=ConvertUtil.toType(label2)
+                                                    resultsText="URL: $result\n"
+                                                    if(label==label2){
+                                                        resultsText+="该网站为风险网站，风险类型为$type\n网站截图:"
+                                                    }else{
+                                                        resultsText+="该网站为风险网站，风险类型为$type 或 $type2\n网站截图:"
+                                                    }
+                                                    imgUrl=src
+                                                }else{
+                                                    resultsText="URL: $result\n"
+                                                    resultsText+="该网站为正常网站"
+                                                    imgUrl=""
+                                                    //跳转到浏览器
+                                                    val uri = Uri.parse(result)
+                                                    val intent = Intent(Intent.ACTION_VIEW, uri)
+                                                    context.startActivity(intent)
+                                                }
+                                                LogUtil.logInfo(label)
+                                                LogUtil.logInfo(label2)
+                                                LogUtil.logInfo(src)
+                                                //resultsText = data.toString()
+                                            }else if(code=="400"){
+                                                val data = jsonObj.getJSONObject("data")
+                                                val msg = data.getString("msg")
+                                                resultsText=msg
+                                            }
+                                        }catch (e: Exception){
+                                            resultsText=e.toString()
+                                        }
+
                                     }
 
                                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                                        resultsText = t.toString()
+                                        loadingState=false
+                                        resultsText="请求失败"
+                                        LogUtil.logInfo(t.toString())
 
                                     }
                                 }
                             )
-                            val uri = Uri.parse(result)
-                            val intent = Intent(Intent.ACTION_VIEW, uri)
-                            context.startActivity(intent)
+                            //val uri = Uri.parse(result)
+                            //val intent = Intent(Intent.ACTION_VIEW, uri)
+                            //context.startActivity(intent)
                         }
                     }
                 }
@@ -164,7 +213,7 @@ fun ScanQrCode() {
 
 
 }
-
+var imgUrl by mutableStateOf("")
 @Composable
 fun SearchText() {
 
@@ -250,31 +299,73 @@ fun SearchText() {
                 }
             )
             val context = LocalContext.current
+
             Button(
                 onClick = {
                     isURL = UrlJudgeUtil().getCompleteUrl(text)
                     if (isURL) {
-                        val call: Call<ResponseBody> = RequestUtil.service.getQRCode(text)
+                        val json = JSONObject()
+                        json.put("url", text)
+                        val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+                        LogUtil.logInfo(json.toString())
+                        loadingState=true//转圈圈
+                        focusManager.clearFocus()
+                        val call: Call<ResponseBody> = RequestUtil.service.checkURL(requestBody)
                         call.enqueue(
                             object : Callback<ResponseBody> {
                                 override fun onResponse(
                                     call: Call<ResponseBody>,
                                     response: Response<ResponseBody>
                                 ) {
-                                    val s: String = response.body()!!.string()
-                                    resultsText = s
-                                    focusManager.clearFocus()
+                                    try{
+                                        loadingState=false
+                                        val jsonData: String = response.body()!!.string()
+                                        val jsonObj = JSONObject(jsonData)
+                                        val code = jsonObj.getString("code")
+                                        if(code=="200"){
+                                            val data = jsonObj.getJSONObject("data")
+                                            val label = data.getString("label")
+                                            val label2 = data.getString("label2")
+                                            val src = data.getString("src")
+                                            if(label!="0"&&label2!="0"){
+                                                val type=ConvertUtil.toType(label)
+                                                val type2=ConvertUtil.toType(label2)
+                                                resultsText="URL: $text\n"
+                                                if(label==label2){
+                                                    resultsText+="该网站为风险网站，风险类型为$type\n网站截图:"
+                                                }else{
+                                                    resultsText+="该网站为风险网站，风险类型为$type 或 $type2\n网站截图:"
+                                                }
+                                                imgUrl=src
+                                            }else{
+                                                resultsText="URL: $text\n"
+                                                resultsText+="该网站为正常网站"
+                                                imgUrl=""
+                                                val uri=Uri.parse(text)
+                                                val intent = Intent(Intent.ACTION_VIEW, uri)
+                                                context.startActivity(intent)
+                                            }
+                                            LogUtil.logInfo(label)
+                                            LogUtil.logInfo(label2)
+                                            LogUtil.logInfo(src)
+                                            //resultsText = data.toString()
+                                        }else if(code=="400"){
+                                            val data = jsonObj.getJSONObject("data")
+                                            val msg = data.getString("msg")
+                                            resultsText=msg
+                                        }
+                                    }catch (e: Exception){
+                                        resultsText=e.toString()
+                                    }
                                 }
 
                                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                                    loadingState=false
+                                    resultsText="请求失败"
                                     LogUtil.logInfo(t.toString())
-
                                 }
                             }
                         )
-                        val uri = Uri.parse(text)
-                        val intent = Intent(Intent.ACTION_VIEW, uri)
-                        context.startActivity(intent)
                     }
                 },
                 shape = RoundedCornerShape(20.dp),
@@ -289,18 +380,114 @@ fun SearchText() {
             ) {
                 Text(text = "Check!")
             }
+
             if (!isURL) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "请输入有效的URL!", color = YuRed, fontWeight = FontWeight.W700)
+                    var hintText=""
+                    hintText = if (!text.startsWith("http://") && !text.startsWith("https://")) {
+                        "请检查URL是否缺失http://或https://"
+                    }else{
+                        "请输入有效的URL!"
+                    }
+                    Text(text = hintText, color = YuRed, fontWeight = FontWeight.W700)
                 }
-            }else{
-
             }
-            LabelCard(resultsText)
+            if(!loadingState){
+                LabelCard(resultsText)
+            }else{
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(230.dp),
+                    contentAlignment = Alignment.Center
+                ){
+                    Row(verticalAlignment = Alignment.CenterVertically){
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(50.dp)
+                                .padding(10.dp),
+                            color = ButtonBlue
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "加载中...",
+                            color = urlCheckColors.textColor
+                        )
+                    }
+                }
+            }
+
         }
+    }
+}
+
+fun handleUrl(context:Context,url:String){
+    val isURL = UrlJudgeUtil().getCompleteUrl(url)
+    if (isURL) {
+        val json = JSONObject()
+        json.put("url", url)
+        val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+        LogUtil.logInfo(json.toString())
+        loadingState=true//转圈圈
+        val call: Call<ResponseBody> = RequestUtil.service.checkURL(requestBody)
+        call.enqueue(
+            object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
+                    try{
+                        loadingState=false
+                        val jsonData: String = response.body()!!.string()
+                        val jsonObj = JSONObject(jsonData)
+                        val code = jsonObj.getString("code")
+                        if(code=="200"){
+                            val data = jsonObj.getJSONObject("data")
+                            val label = data.getString("label")
+                            val label2 = data.getString("label2")
+                            val src = data.getString("src")
+                            if(label!="0"&&label2!="0"){
+                                val type=ConvertUtil.toType(label)
+                                val type2=ConvertUtil.toType(label2)
+                                resultsText="URL: $url\n"
+                                if(label==label2){
+                                    resultsText+="该网站为风险网站，风险类型为$type\n网站截图:"
+                                }else{
+                                    resultsText+="该网站为风险网站，风险类型为$type 或 $type2\n网站截图:"
+                                }
+                                imgUrl=src
+                            }else{
+                                resultsText="URL: $url\n"
+                                resultsText+="该网站为正常网站"
+                                imgUrl=""
+                                //跳转到浏览器
+                                val uri = Uri.parse(url)
+                                val intent = Intent(Intent.ACTION_VIEW, uri)
+                                context.startActivity(intent)
+                            }
+                            LogUtil.logInfo(label)
+                            LogUtil.logInfo(label2)
+                            LogUtil.logInfo(src)
+                        }else if(code=="400"){
+                            val data = jsonObj.getJSONObject("data")
+                            val msg = data.getString("msg")
+                            resultsText=msg
+                        }
+                    }catch (e: Exception){
+                        resultsText=e.toString()
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    loadingState=false
+                    resultsText="请求失败"
+                    LogUtil.logInfo(t.toString())
+                }
+            }
+        )
     }
 }
 
@@ -319,26 +506,42 @@ fun LabelCard(
             elevation = 10.dp,
             modifier = Modifier
                 .fillMaxWidth()
+                .height(200.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .background(urlCheckColors.cardColor)
-
             ) {
-                Text(
-                    text = resultsText,
-                    color = urlCheckColors.textColor,
-                    maxLines=8,
-                    overflow=TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(15.dp)
-                )
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    item {
+                        Text(
+                            text = resultsText,
+                            color = urlCheckColors.textColor,
+                            modifier = Modifier.padding(15.dp)
+                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(15.dp,3.dp)
+                        ){
+                            AsyncImage(
+                                model = imgUrl,
+                                contentDescription = null
+                            )
+                        }
+
+                    }
+                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun NetworkDetection() {
     val context = LocalContext.current
@@ -354,6 +557,7 @@ fun NetworkDetection() {
         statusText="网络异常"
         statusColor=Color.Red
     }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
