@@ -141,9 +141,11 @@ fun ScanQrCode() {
                                                 val data = jsonObj.getJSONObject("data")
                                                 val msg = data.getString("msg")
                                                 resultsText=msg
+                                                imgUrl=""
                                             }
                                         }catch (e: Exception){
                                             resultsText=e.toString()
+                                            imgUrl=""
                                         }
 
                                     }
@@ -151,6 +153,7 @@ fun ScanQrCode() {
                                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                                         loadingState=false
                                         resultsText="请求失败"
+                                        imgUrl=""
                                         LogUtil.logInfo(t.toString())
 
                                     }
@@ -355,15 +358,18 @@ fun SearchText() {
                                             val data = jsonObj.getJSONObject("data")
                                             val msg = data.getString("msg")
                                             resultsText=msg
+                                            imgUrl=""
                                         }
                                     }catch (e: Exception){
                                         resultsText=e.toString()
+                                        imgUrl=""
                                     }
                                 }
 
                                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                                     loadingState=false
                                     resultsText="请求失败"
+                                    imgUrl=""
                                     LogUtil.logInfo(t.toString())
                                 }
                             }
@@ -477,15 +483,18 @@ fun handleUrl(context:Context,url:String){
                             val data = jsonObj.getJSONObject("data")
                             val msg = data.getString("msg")
                             resultsText=msg
+                            imgUrl=""
                         }
                     }catch (e: Exception){
                         resultsText=e.toString()
+                        imgUrl=""
                     }
                 }
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     loadingState=false
                     resultsText="请求失败"
+                    imgUrl=""
                     LogUtil.logInfo(t.toString())
                 }
             }
